@@ -1,0 +1,20 @@
+{
+    "name": "bigg-boss-voting",
+    "version": "1.0.0",
+    "description": "Bigg Boss 9 Telugu Voting Platform",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "lint": "eslint src --ext .js,.jsx"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "vite": "^5.0.0"
+    },
+    "engines": {
+        "node": ">=16.0.0",
+        "npm": ">=7.0.0"
+    }
+}
