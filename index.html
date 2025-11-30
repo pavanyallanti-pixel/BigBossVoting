@@ -1,0 +1,2513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote &amp; Discuss - Interactive Voting Platform</title>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/+esm';
+        window.createSupabaseClient = createClient;
+    </script>
+    <style>
+        /* Design System CSS */
+        :root {
+            /* Primitive Color Tokens */
+            --color-white: rgba(255, 255, 255, 1);
+            --color-black: rgba(0, 0, 0, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-400: rgba(45, 166, 178, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-teal-800: rgba(41, 150, 161, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-red-500: rgba(192, 21, 47, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-orange-500: rgba(168, 75, 47, 1);
+
+            /* RGB versions for opacity control */
+            --color-brown-600-rgb: 94, 82, 64;
+            --color-teal-500-rgb: 33, 128, 141;
+            --color-slate-900-rgb: 19, 52, 59;
+            --color-slate-500-rgb: 98, 108, 113;
+            --color-red-500-rgb: 192, 21, 47;
+            --color-red-400-rgb: 255, 84, 89;
+            --color-orange-500-rgb: 168, 75, 47;
+            --color-orange-400-rgb: 230, 129, 97;
+
+            /* Background color tokens */
+            --color-bg-1: rgba(59, 130, 246, 0.08);
+            --color-bg-2: rgba(245, 158, 11, 0.08);
+            --color-bg-3: rgba(34, 197, 94, 0.08);
+            --color-bg-4: rgba(239, 68, 68, 0.08);
+            --color-bg-5: rgba(147, 51, 234, 0.08);
+            --color-bg-6: rgba(249, 115, 22, 0.08);
+            --color-bg-7: rgba(236, 72, 153, 0.08);
+            --color-bg-8: rgba(6, 182, 212, 0.08);
+
+            /* Semantic Color Tokens */
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-primary-active: var(--color-teal-700);
+            --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+            --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-btn-primary-text: var(--color-cream-50);
+            --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-error: var(--color-red-500);
+            --color-success: var(--color-teal-500);
+            --color-warning: var(--color-orange-500);
+            --color-info: var(--color-slate-500);
+            --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+            --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
+
+            /* Common style patterns */
+            --focus-ring: 0 0 0 3px var(--color-focus-ring);
+            --focus-outline: 2px solid var(--color-primary);
+            --status-bg-opacity: 0.15;
+            --status-border-opacity: 0.25;
+
+            /* Typography */
+            --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-family-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            --font-size-xs: 11px;
+            --font-size-sm: 12px;
+            --font-size-base: 14px;
+            --font-size-md: 14px;
+            --font-size-lg: 16px;
+            --font-size-xl: 18px;
+            --font-size-2xl: 20px;
+            --font-size-3xl: 24px;
+            --font-size-4xl: 30px;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 550;
+            --font-weight-bold: 600;
+            --line-height-tight: 1.2;
+            --line-height-normal: 1.5;
+            --letter-spacing-tight: -0.01em;
+
+            /* Spacing */
+            --space-0: 0;
+            --space-1: 1px;
+            --space-2: 2px;
+            --space-4: 4px;
+            --space-6: 6px;
+            --space-8: 8px;
+            --space-10: 10px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --space-32: 32px;
+
+            /* Border Radius */
+            --radius-sm: 6px;
+            --radius-base: 8px;
+            --radius-md: 10px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+
+            /* Shadows */
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+
+            /* Animation */
+            --duration-fast: 150ms;
+            --duration-normal: 250ms;
+            --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Dark mode colors */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-gray-400-rgb: 119, 124, 124;
+                --color-teal-300-rgb: 50, 184, 198;
+                --color-gray-300-rgb: 167, 169, 169;
+                --color-gray-200-rgb: 245, 245, 245;
+
+                --color-bg-1: rgba(29, 78, 216, 0.15);
+                --color-bg-2: rgba(180, 83, 9, 0.15);
+                --color-bg-3: rgba(21, 128, 61, 0.15);
+                --color-bg-4: rgba(185, 28, 28, 0.15);
+                --color-bg-5: rgba(107, 33, 168, 0.15);
+                --color-bg-6: rgba(194, 65, 12, 0.15);
+                --color-bg-7: rgba(190, 24, 93, 0.15);
+                --color-bg-8: rgba(8, 145, 178, 0.15);
+
+                --color-background: var(--color-charcoal-700);
+                --color-surface: var(--color-charcoal-800);
+                --color-text: var(--color-gray-200);
+                --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+                --color-primary: var(--color-teal-300);
+                --color-primary-hover: var(--color-teal-400);
+                --color-primary-active: var(--color-teal-800);
+                --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+                --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+                --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-error: var(--color-red-400);
+                --color-success: var(--color-teal-300);
+                --color-warning: var(--color-orange-400);
+                --color-info: var(--color-gray-300);
+                --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+                --color-btn-primary-text: var(--color-slate-900);
+                --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+                --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+                --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+                --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
+            }
+        }
+
+        @font-face {
+            font-family: 'FKGroteskNeue';
+            src: url('https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2') format('woff2');
+        }
+
+        /* Base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: var(--font-size-base);
+            font-family: var(--font-family-base);
+            line-height: var(--line-height-normal);
+            color: var(--color-text);
+            background-color: var(--color-background);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+            padding: var(--space-20) var(--space-16);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--space-12);
+        }
+
+        .setup-btn {
+            background: var(--color-secondary);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+            padding: var(--space-8) var(--space-16);
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--space-6);
+            transition: all var(--duration-normal) var(--ease-standard);
+        }
+
+        .setup-btn:hover {
+            background: var(--color-secondary-hover);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--color-gray-300);
+            transition: background-color var(--duration-normal) var(--ease-standard);
+        }
+
+        .status-indicator.connected {
+            background-color: var(--color-success);
+            box-shadow: 0 0 8px rgba(var(--color-success-rgb), 0.5);
+        }
+
+        .header-title {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+
+        .header-icon {
+            font-size: var(--font-size-3xl);
+            margin-right: var(--space-12);
+        }
+
+        /* Main content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-32) var(--space-16);
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: var(--space-32);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-20);
+        }
+
+        .section-title {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+        }
+
+        .comment-count {
+            background-color: var(--color-primary);
+            color: var(--color-btn-primary-text);
+            padding: var(--space-4) var(--space-12);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+        }
+
+        /* Poll section */
+        .poll-container {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--space-32);
+        }
+
+        .poll-instruction {
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--space-16);
+            text-align: center;
+        }
+
+        .poll-embed {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .poll-embed iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+            border-radius: var(--radius-base);
+        }
+
+        /* Comment form */
+        .comment-form {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-20);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--space-24);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-16);
+            position: relative;
+        }
+
+        .form-row {
+            display: flex;
+            gap: var(--space-12);
+            margin-bottom: var(--space-16);
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: var(--space-12);
+            font-size: var(--font-size-base);
+            font-family: var(--font-family-base);
+            color: var(--color-text);
+            background-color: var(--color-background);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color var(--duration-fast) var(--ease-standard);
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: var(--focus-ring);
+        }
+
+        .form-textarea::placeholder {
+            color: var(--color-text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: var(--space-10) var(--space-12);
+            font-size: var(--font-size-base);
+            font-family: var(--font-family-base);
+            color: var(--color-text);
+            background-color: var(--color-background);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            transition: border-color var(--duration-fast) var(--ease-standard);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: var(--focus-ring);
+        }
+
+        .char-counter {
+            position: absolute;
+            bottom: var(--space-8);
+            right: var(--space-12);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            pointer-events: none;
+        }
+
+        .char-counter.warning {
+            color: var(--color-warning);
+        }
+
+        .char-counter.error {
+            color: var(--color-error);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-12) var(--space-24);
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all var(--duration-normal) var(--ease-standard);
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: var(--color-btn-primary-text);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-primary:active {
+            background: var(--color-primary-active);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary:focus-visible {
+            outline: none;
+            box-shadow: var(--focus-ring);
+        }
+
+        /* Success message */
+        .success-message {
+            background-color: rgba(var(--color-teal-500-rgb), 0.1);
+            color: var(--color-success);
+            padding: var(--space-12) var(--space-16);
+            border-radius: var(--radius-base);
+            border: 1px solid rgba(var(--color-teal-500-rgb), 0.3);
+            margin-bottom: var(--space-16);
+            display: none;
+            animation: fadeIn 0.3s var(--ease-standard);
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* Comments list */
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-16);
+        }
+
+        .comment-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-20);
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow var(--duration-normal) var(--ease-standard);
+            animation: fadeInSlide 0.4s var(--ease-standard);
+        }
+
+        .comment-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-12);
+            margin-bottom: var(--space-12);
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            color: var(--color-btn-primary-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-base);
+            flex-shrink: 0;
+        }
+
+        .comment-info {
+            flex: 1;
+        }
+
+        .comment-author {
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+            font-size: var(--font-size-base);
+            margin-bottom: var(--space-4);
+        }
+
+        .comment-timestamp {
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        .comment-text {
+            color: var(--color-text);
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-normal);
+            margin-bottom: var(--space-16);
+            word-wrap: break-word;
+        }
+
+        .comment-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--space-12);
+        }
+
+        /* Comment Actions */
+        .comment-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            margin-top: var(--space-12);
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-4);
+            padding: var(--space-6) var(--space-12);
+            background: transparent;
+            color: var(--color-text-secondary);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-standard);
+        }
+
+        .action-btn:hover {
+            background: var(--color-secondary);
+            color: var(--color-text);
+        }
+
+        .action-btn.liked {
+            color: var(--color-primary);
+        }
+
+        .action-btn.disliked {
+            color: var(--color-error);
+        }
+
+        .action-btn.reply-btn {
+            color: var(--color-primary);
+        }
+
+        .action-btn.reply-btn:hover {
+            background: rgba(var(--color-teal-500-rgb), 0.1);
+        }
+
+        .action-count {
+            font-weight: var(--font-weight-semibold);
+        }
+
+        /* Reply Form */
+        .reply-form {
+            margin-top: var(--space-16);
+            padding: var(--space-12);
+            background: var(--color-secondary);
+            border-radius: var(--radius-base);
+            border: 1px solid var(--color-border);
+            animation: slideDown 0.3s var(--ease-standard);
+        }
+
+        .reply-form textarea {
+            width: 100%;
+            padding: var(--space-8) var(--space-10);
+            font-size: var(--font-size-sm);
+            font-family: var(--font-family-base);
+            color: var(--color-text);
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            resize: vertical;
+            min-height: 60px;
+            margin-bottom: var(--space-8);
+        }
+
+        .reply-form textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: var(--focus-ring);
+        }
+
+        .reply-form-actions {
+            display: flex;
+            gap: var(--space-8);
+        }
+
+        .btn-sm {
+            padding: var(--space-6) var(--space-12);
+            font-size: var(--font-size-sm);
+            border-radius: var(--radius-sm);
+        }
+
+        .btn-secondary {
+            background: var(--color-surface);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-secondary);
+        }
+
+        /* Replies Container */
+        .replies-container {
+            margin-top: var(--space-16);
+            padding-left: var(--space-16);
+            border-left: 2px solid var(--color-border);
+        }
+
+        .reply-card {
+            background-color: var(--color-background);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-base);
+            padding: var(--space-12);
+            margin-bottom: var(--space-12);
+            animation: fadeInSlide 0.3s var(--ease-standard);
+        }
+
+        .reply-text {
+            color: var(--color-text);
+            font-size: var(--font-size-sm);
+            line-height: var(--line-height-normal);
+            margin-bottom: var(--space-6);
+            word-wrap: break-word;
+        }
+
+        .reply-meta {
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-xs);
+        }
+
+        .replies-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-6);
+            color: var(--color-primary);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            margin-top: var(--space-8);
+            padding: var(--space-4) var(--space-8);
+            border-radius: var(--radius-sm);
+            transition: background-color var(--duration-fast) var(--ease-standard);
+        }
+
+        .replies-toggle:hover {
+            background-color: var(--color-secondary);
+        }
+
+        .replies-container.collapsed {
+            display: none;
+        }
+
+        .load-more-replies {
+            display: block;
+            margin: var(--space-12) 0;
+            padding: var(--space-6) var(--space-12);
+            background: var(--color-secondary);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-standard);
+            width: 100%;
+        }
+
+        .load-more-replies:hover {
+            background: var(--color-secondary-hover);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-32);
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-base);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: var(--space-16);
+            opacity: 0.5;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-16);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-lg);
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalSlideIn 0.3s var(--ease-standard);
+        }
+
+        .modal-header {
+            padding: var(--space-20);
+            border-bottom: 1px solid var(--color-card-border-inner);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: var(--font-size-2xl);
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            padding: var(--space-4);
+            line-height: 1;
+            transition: color var(--duration-fast) var(--ease-standard);
+        }
+
+        .modal-close:hover {
+            color: var(--color-text);
+        }
+
+        .modal-body {
+            padding: var(--space-20);
+        }
+
+        .modal-instructions {
+            background-color: var(--color-bg-1);
+            padding: var(--space-16);
+            border-radius: var(--radius-base);
+            margin-bottom: var(--space-20);
+            font-size: var(--font-size-sm);
+            color: var(--color-text);
+            line-height: var(--line-height-normal);
+        }
+
+        .modal-instructions ol {
+            margin: var(--space-12) 0 0 var(--space-20);
+        }
+
+        .modal-instructions li {
+            margin-bottom: var(--space-8);
+        }
+
+        .modal-instructions code {
+            background-color: var(--color-secondary);
+            padding: var(--space-2) var(--space-6);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-8);
+            font-weight: var(--font-weight-medium);
+            font-size: var(--font-size-sm);
+            color: var(--color-text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: var(--space-10) var(--space-12);
+            font-size: var(--font-size-base);
+            font-family: var(--font-family-base);
+            color: var(--color-text);
+            background-color: var(--color-background);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            transition: border-color var(--duration-fast) var(--ease-standard);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: var(--focus-ring);
+        }
+
+        .status-message {
+            padding: var(--space-12) var(--space-16);
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-sm);
+            margin-top: var(--space-16);
+            display: none;
+        }
+
+        .status-message.show {
+            display: block;
+        }
+
+        .status-message.success {
+            background-color: rgba(var(--color-success-rgb), 0.1);
+            color: var(--color-success);
+            border: 1px solid rgba(var(--color-success-rgb), 0.3);
+        }
+
+        .status-message.error {
+            background-color: rgba(var(--color-error-rgb), 0.1);
+            color: var(--color-error);
+            border: 1px solid rgba(var(--color-error-rgb), 0.3);
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: var(--space-20);
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                max-height: 200px;
+                transform: translateY(0);
+            }
+        }
+
+        /* Contestant Feeds Section */
+        .contestant-feeds-section {
+            margin-top: var(--space-32);
+            padding-top: var(--space-32);
+            border-top: 2px solid var(--color-border);
+        }
+
+        .feeds-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-24);
+            margin-top: var(--space-24);
+        }
+
+        .feed-item {
+            background: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feed-header {
+            padding: var(--space-16);
+            background: var(--color-primary);
+            color: var(--color-btn-primary-text);
+            border-bottom: 1px solid var(--color-card-border-inner);
+        }
+
+        .feed-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            margin: 0 0 var(--space-6) 0;
+        }
+
+        .feed-hashtags {
+            font-size: var(--font-size-sm);
+            opacity: 0.9;
+            font-weight: var(--font-weight-normal);
+        }
+
+        .feed-content {
+            padding: var(--space-20);
+            min-height: 500px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .instagram-feed,
+        .twitter-feed {
+            height: 100%;
+        }
+
+        /* Feed Placeholder */
+        .feed-placeholder {
+            text-align: center;
+            padding: var(--space-32) var(--space-20);
+            color: var(--color-text);
+        }
+
+        .placeholder-icon {
+            font-size: 64px;
+            margin-bottom: var(--space-20);
+            opacity: 0.7;
+        }
+
+        .feed-placeholder h4 {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-16);
+            color: var(--color-text);
+        }
+
+        .feed-placeholder p {
+            font-size: var(--font-size-base);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-16);
+            line-height: var(--line-height-normal);
+        }
+
+        .feed-placeholder ol {
+            text-align: left;
+            margin: var(--space-16) auto;
+            max-width: 400px;
+            padding-left: var(--space-20);
+        }
+
+        .feed-placeholder li {
+            margin-bottom: var(--space-10);
+            font-size: var(--font-size-sm);
+            color: var(--color-text);
+            line-height: var(--line-height-normal);
+        }
+
+        .feed-placeholder code {
+            background: var(--color-secondary);
+            padding: var(--space-2) var(--space-6);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            color: var(--color-primary);
+        }
+
+        .feed-placeholder a {
+            color: var(--color-primary);
+            text-decoration: underline;
+            font-weight: var(--font-weight-medium);
+        }
+
+        .feed-placeholder a:hover {
+            color: var(--color-primary-hover);
+        }
+
+        .setup-feed-btn {
+            margin-top: var(--space-20);
+        }
+
+        /* Feed Instructions */
+        .feed-instructions {
+            margin-top: var(--space-24);
+            background: var(--color-bg-1);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-20);
+        }
+
+        .feed-instructions details {
+            cursor: pointer;
+        }
+
+        .feed-instructions summary {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+            padding: var(--space-12);
+            border-radius: var(--radius-base);
+            transition: background-color var(--duration-fast) var(--ease-standard);
+        }
+
+        .feed-instructions summary:hover {
+            background: var(--color-secondary);
+        }
+
+        .instructions-content {
+            margin-top: var(--space-16);
+            padding: var(--space-16);
+            background: var(--color-surface);
+            border-radius: var(--radius-base);
+            border: 1px solid var(--color-card-border-inner);
+        }
+
+        .instructions-content h4 {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+            margin: var(--space-20) 0 var(--space-12) 0;
+        }
+
+        .instructions-content h4:first-child {
+            margin-top: 0;
+        }
+
+        .instructions-content p {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            line-height: var(--line-height-normal);
+            margin-bottom: var(--space-12);
+        }
+
+        .instructions-content ul {
+            list-style: disc;
+            padding-left: var(--space-24);
+            margin: var(--space-12) 0;
+        }
+
+        .instructions-content li {
+            font-size: var(--font-size-sm);
+            color: var(--color-text);
+            margin-bottom: var(--space-8);
+            line-height: var(--line-height-normal);
+        }
+
+        .instructions-content code {
+            background: var(--color-secondary);
+            padding: var(--space-2) var(--space-6);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            color: var(--color-primary);
+        }
+
+        .instructions-content a {
+            color: var(--color-primary);
+            text-decoration: underline;
+        }
+
+        .instructions-content a:hover {
+            color: var(--color-primary-hover);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: var(--font-size-xl);
+            }
+
+            .section-title {
+                font-size: var(--font-size-xl);
+            }
+
+            .main-content {
+                padding: var(--space-20) var(--space-12);
+            }
+
+            .poll-container,
+            .comment-form {
+                padding: var(--space-16);
+            }
+
+            .poll-embed iframe {
+                height: 400px;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .comment-actions {
+                flex-wrap: wrap;
+            }
+
+            /* Contestant Feeds - Mobile */
+            .feeds-container {
+                grid-template-columns: 1fr;
+                gap: var(--space-20);
+            }
+
+            .feed-content {
+                min-height: 400px;
+                padding: var(--space-16);
+            }
+
+            .feed-placeholder {
+                padding: var(--space-24) var(--space-16);
+            }
+
+            .placeholder-icon {
+                font-size: 48px;
+            }
+
+            .feed-placeholder h4 {
+                font-size: var(--font-size-lg);
+            }
+
+            .feed-placeholder ol {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <span class="header-icon">🗳️</span>
+                <h1 class="header-title">Vote &amp; Discuss</h1>
+            </div>
+            <div class="header-right">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <button class="setup-btn" id="setupBtn">
+                    ⚙️ Setup
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Setup Modal -->
+    <div class="modal-overlay" id="setupModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Supabase Setup</h3>
+                <button class="modal-close" id="closeModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-instructions">
+                    <strong>Setup Instructions:</strong>
+                    <ol>
+                        <li>Create a free account at <a href="https://supabase.com" target="_blank">supabase.com</a>
+                        </li>
+                        <li>Create a new project</li>
+                        <li>Go to Project Settings → API</li>
+                        <li>Copy your <code>URL</code> and <code>anon/public</code> key</li>
+                        <li>Run this SQL in SQL Editor:
+                            <pre
+                                style="background: var(--color-secondary); padding: 12px; border-radius: 6px; font-size: 11px; margin-top: 8px; overflow-x: auto;">-- Single unified table for all discussion items
+CREATE TABLE discussions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  poll_id TEXT DEFAULT 'main',
+  parent_id UUID,
+  parent_type TEXT,
+  author_name TEXT DEFAULT 'Anonymous',
+  author_email TEXT,
+  text TEXT NOT NULL,
+  item_type TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Create indexes for faster queries
+CREATE INDEX idx_discussions_parent_id ON discussions(parent_id);
+CREATE INDEX idx_discussions_poll_id ON discussions(poll_id);
+CREATE INDEX idx_discussions_item_type ON discussions(item_type);
+
+-- Votes table (unified likes and dislikes)
+CREATE TABLE votes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  discussion_id UUID REFERENCES discussions(id) ON DELETE CASCADE,
+  session_id TEXT NOT NULL,
+  vote_type TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(discussion_id, session_id, vote_type)
+);
+
+-- Enable RLS
+ALTER TABLE discussions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE votes ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies - PUBLIC ACCESS
+CREATE POLICY "discussions_read" ON discussions FOR SELECT USING (true);
+CREATE POLICY "discussions_insert" ON discussions FOR INSERT WITH CHECK (true);
+CREATE POLICY "votes_read" ON votes FOR SELECT USING (true);
+CREATE POLICY "votes_insert" ON votes FOR INSERT WITH CHECK (true);
+CREATE POLICY "votes_delete" ON votes FOR DELETE USING (true);
+
+-- Enable Realtime
+ALTER PUBLICATION supabase_realtime ADD TABLE discussions;
+ALTER PUBLICATION supabase_realtime ADD TABLE votes;</pre>
+                        </li>
+                    </ol>
+                </div>
+                <form id="setupForm">
+                    <div class="form-group">
+                        <label class="form-label" for="supabaseUrl">Supabase URL</label>
+                        <input type="url" id="supabaseUrl" class="form-input"
+                            placeholder="https://your-project.supabase.co" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="supabaseKey">Supabase Anon Key</label>
+                        <input type="text" id="supabaseKey" class="form-input"
+                            placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="connectBtn" style="width: 100%;">Connect</button>
+                </form>
+                <div id="setupStatus" class="status-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <!-- Connection Status Panel -->
+    <section id="debugStatusPanel"
+        style="max-width:1200px;margin:24px auto 0 auto;padding:0 20px 16px 20px;display:flex;align-items:center;gap:20px;background:var(--color-surface);border:1px solid var(--color-card-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-xs);font-size:14px;">
+        <span id="connectionIcon"
+            style="display:inline-block;width:18px;height:18px;border-radius:12px;background:var(--color-error);vertical-align:middle;margin-right:10px;box-shadow:0 0 0 2px var(--color-card-border-inner);"></span>
+        <span id="connectionStatusText">❌ Not Connected</span>
+        <span id="activePollText" style="color:var(--color-primary);margin-left:16px;">Active poll: <b>'main'</b></span>
+        <span id="lastSyncTime" style="margin-left:20px;font-size:13px;color:var(--color-text-secondary)">Last sync:
+            --</span>
+        <div style="margin-left:auto;">
+            <button id="collapseDebugBtn"
+                style="background:none;border:0;font-size:15px;padding:0 8px;cursor:pointer;color:var(--color-info);">🪛
+                Debug</button>
+        </div>
+    </section>
+    <section id="debugPanel"
+        style="display:none;max-width:1200px;margin:0 auto 5px auto;padding:0 20px 22px 20px;background:var(--color-bg-1);border-radius:var(--radius-lg);border:1px solid var(--color-card-border-inner);font-family:var(--font-family-mono);font-size:13px;white-space:pre-wrap;">
+        Debug info will appear here</section>
+
+    <main class="main-content">
+        <!-- Poll Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">What's Your Vote?</h2>
+            </div>
+            <div class="poll-container">
+                <div class="strawpoll-embed" id="strawpoll_3RnYXoWWQye"
+                    style="height: 864px; max-width: 640px; width: 100%; margin: 0 auto; display: flex; flex-direction: column;">
+                    <iframe title="StrawPoll Embed" id="strawpoll_iframe_3RnYXoWWQye"
+                        src="https://strawpoll.com/embed/3RnYXoWWQye"
+                        style="position: static; visibility: visible; display: block; width: 100%; flex-grow: 1;"
+                        frameborder="0" allowfullscreen allowtransparency>Loading...</iframe>
+                    <script async src="https://cdn.strawpoll.com/dist/widgets.js" charset="utf-8"></script>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contestant Feeds Section -->
+        <section class="section contestant-feeds-section">
+            <div class="section-header">
+                <h2 class="section-title">🌟 Contestant Feeds</h2>
+            </div>
+
+            <div class="feeds-container">
+                <!-- Instagram Feed -->
+                <div class="feed-item">
+                    <div class="feed-header">
+                        <h3 class="feed-title">📸 Instagram</h3>
+                        <span class="feed-hashtags">#BiggBoss9Telugu #BBTelugu</span>
+                    </div>
+                    <div class="feed-content instagram-feed">
+                        <!-- Elfsight Instagram Feed | Untitled Instagram Feed -->
+                        <!-- <div class="elfsight-app-e4a4ef6e-8898-4021-a7f8-7239a8b0d2f2" data-elfsight-app-lazy></div> -->
+                        <!-- Elfsight Instagram Feed | Untitled Instagram Feed -->
+                        <script src="https://elfsightcdn.com/platform.js" async></script>
+
+                        <div style="z-index: 0;" class="elfsight-app-e4a4ef6e-8898-4021-a7f8-7239a8b0d2f2"
+                            data-elfsight-app-lazy></div>
+                        <div style="
+    background: #ffffff;
+    /* color: antiquewhite; */
+    /* margin-top: -27px; */
+    position: absolute;
+    /* top: -1px; */        /* adjust as needed */
+    left: 20px;
+    z-index: 9999;    /* top */
+    /* background: rgb(0 0 0 / 80%); */
+    padding: 10px;
+    border-radius: 6px;
+    bottom: 26px;
+    width: 90%;
+    height: 40px;
+"></div>
+                        <!-- <div class="feed-placeholder">
+                            <div class="placeholder-icon">📷</div>
+                            <h4>Instagram Feed Setup Required</h4>
+                            <p>To display Instagram posts:</p>
+                            <ol>
+                                <li>Visit <a href="https://elfsight.com/instagram-feed-instashow/" target="_blank">Elfsight Instagram Feed</a></li>
+                                <li>Click "Create Widget Free" and sign up</li>
+                                <li>Choose "Hashtag Feed"</li>
+                                <li>Enter hashtags: <code>#BiggBoss9Telugu, #BBTelugu, #BiggBossContestants</code></li>
+                                <li>Copy the embed code</li>
+                                <li>Paste it here by clicking "Add Feed" below</li>
+                            </ol>
+                            <button class="btn btn-primary setup-feed-btn" data-feed-type="instagram">Add Instagram Feed</button>
+                        </div> -->
+                        <!-- Paste your Elfsight Instagram embed code here -->
+                    </div>
+                </div>
+
+                <!-- Twitter/X Feed -->
+                <div class="feed-item">
+                    <div class="feed-header">
+                        <h3 class="feed-title">𝕏 Twitter/X</h3>
+                        <span class="feed-hashtags">#BiggBoss9Telugu #BBTelugu</span>
+                    </div>
+                    <div class="feed-content twitter-feed">
+                        <!-- Elfsight Twitter Feed | Untitled Twitter Feed -->
+                        <script src="https://elfsightcdn.com/platform.js" async></script>
+                        <div class="elfsight-app-912a1b56-f558-4bd0-ab61-23db67b14cfb" data-elfsight-app-lazy></div>
+                        <!-- Paste your Elfsight Twitter/X embed code here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="feed-instructions">
+                <details>
+                    <summary>📖 Detailed Setup Instructions</summary>
+                    <div class="instructions-content">
+                        <h4>Why Elfsight?</h4>
+                        <p>Elfsight provides free, no-code social media widgets that auto-update with new posts. No
+                            authentication or API keys needed!</p>
+
+                        <h4>Alternative Options:</h4>
+                        <ul>
+                            <li><strong>EmbedSocial:</strong> <a href="https://embedsocial.com"
+                                    target="_blank">embedsocial.com</a></li>
+                            <li><strong>Curator.io:</strong> <a href="https://curator.io" target="_blank">curator.io</a>
+                            </li>
+                        </ul>
+
+                        <h4>Recommended Hashtags:</h4>
+                        <ul>
+                            <li><code>#BiggBoss9Telugu</code> - Main show hashtag</li>
+                            <li><code>#BBTelugu</code> - Short version</li>
+                            <li><code>#BiggBossContestants</code> - Contestant posts</li>
+                            <li><code>#BiggBossVoting</code> - Voting related</li>
+                            <li>Contestant names: <code>#KalyanPadala</code>, <code>#ThanujaPuttasswamy</code>, etc.
+                            </li>
+                        </ul>
+
+                        <h4>Features:</h4>
+                        <ul>
+                            <li>✅ Auto-updates with new posts</li>
+                            <li>✅ Mobile responsive</li>
+                            <li>✅ No authentication required</li>
+                            <li>✅ Free forever (basic plan)</li>
+                            <li>✅ Content moderation available</li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+        </section>
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Social Media</h2>
+
+            </div>
+            <!-- Elfsight Social Feed | Untitled Social Feed -->
+            <script src="https://elfsightcdn.com/platform.js" async></script>
+            <div class="elfsight-app-579d2a62-2742-4aae-9223-2bb12180295b" data-elfsight-app-lazy></div>
+        </section>
+        <!-- Discussions Section -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Live Discussions</h2>
+                <span class="comment-count" id="commentCount">0</span>
+                <button id="refreshBtn" class="action-btn" title="Refresh Comments" style="margin-left: 12px;">🔄
+                    Refresh Comments</button>
+            </div>
+
+            <!-- Comment Form -->
+            <div class="comment-form">
+                <div id="successMessage" class="success-message">💬 Comment posted successfully!</div>
+                <form id="commentForm">
+                    <div class="form-group">
+                        <textarea id="commentText" class="form-textarea" placeholder="Join the discussion" required
+                            maxlength="700"></textarea>
+                        <span class="char-counter" id="charCounter">0/700</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="authorName" class="form-input" placeholder="Name*" required />
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="authorEmail" class="form-input" placeholder="Email" />
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Post Comment</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Comments List -->
+            <div id="commentsList" class="comments-list">
+                <div class="empty-state">
+                    <div class="empty-state-icon">💭</div>
+                    <p>No discussions yet. Be the first to comment!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        // Supabase client
+        let supabase = null;
+        const POLL_ID = 'main';
+        const MAX_COMMENTS = 50;
+        let lastSync = null; // timestamp for status
+        let errorLog = [];
+
+        // Debug panel references
+        const debugStatusPanel = document.getElementById('debugStatusPanel');
+        const debugPanel = document.getElementById('debugPanel');
+        const collapseDebugBtn = document.getElementById('collapseDebugBtn');
+        const connectionIcon = document.getElementById('connectionIcon');
+        const connectionStatusText = document.getElementById('connectionStatusText');
+        const lastSyncTime = document.getElementById('lastSyncTime');
+        const refreshBtn = document.getElementById('refreshBtn');
+        // In-memory storage for discussions and votes
+        let discussionsData = []; // All discussions (comments and replies)
+        let votesData = {}; // Keyed by discussion_id
+        let userVotes = {}; // Track user's votes: {discussion_id: 'like'|'dislike'}
+        let collapsedThreads = new Set(); // Track collapsed reply threads
+        let sessionId = null;
+
+        // Generate or get session ID
+        function getSessionId() {
+            if (!sessionId) {
+                sessionId = 'session_' + Math.random().toString(36).substring(2) + Date.now();
+            }
+            return sessionId;
+        }
+
+        // Get references to DOM elements
+        const commentForm = document.getElementById('commentForm');
+        const commentText = document.getElementById('commentText');
+        const authorName = document.getElementById('authorName');
+        const authorEmail = document.getElementById('authorEmail');
+        const charCounter = document.getElementById('charCounter');
+        const commentsList = document.getElementById('commentsList');
+        const commentCount = document.getElementById('commentCount');
+        const successMessage = document.getElementById('successMessage');
+        const submitBtn = document.getElementById('submitBtn');
+        const setupBtn = document.getElementById('setupBtn');
+        const setupModal = document.getElementById('setupModal');
+        const closeModal = document.getElementById('closeModal');
+        const setupForm = document.getElementById('setupForm');
+        const setupStatus = document.getElementById('setupStatus');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const supabaseUrlInput = document.getElementById('supabaseUrl');
+        const supabaseKeyInput = document.getElementById('supabaseKey');
+        const connectBtn = document.getElementById('connectBtn');
+
+        // Initialize Supabase client
+        function initSupabase(url, key) {
+            try {
+                supabase = window.createSupabaseClient(url, key);
+                return true;
+            } catch (error) {
+                console.error('Error initializing Supabase:', error);
+                return false;
+            }
+        }
+
+        // Test Supabase connection
+        async function testConnection() {
+            try {
+                const { data, error } = await supabase
+                    .from('discussions')
+                    .select('count')
+                    .limit(1);
+
+                if (error) throw error;
+                return true;
+            } catch (error) {
+                console.error('Connection test failed:', error);
+                throw error;
+            }
+        }
+
+        // Load all discussions from Supabase
+        async function loadDiscussions() {
+            if (!supabase) return [];
+
+            try {
+                const { data, error } = await supabase
+                    .from('discussions')
+                    .select('*')
+                    .eq('poll_id', POLL_ID)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                // Add timestamp for compatibility with existing code
+                const dataWithTimestamp = (data || []).map(item => ({
+                    ...item,
+                    timestamp: new Date(item.created_at).getTime()
+                }));
+
+                debugLog(`Loaded ${dataWithTimestamp.length} discussions`);
+                return dataWithTimestamp;
+            } catch (error) {
+                console.error('Error loading discussions:', error);
+                debugLog('ERROR loading discussions: ' + error.message);
+                showError('Failed to load discussions');
+                return [];
+            }
+        }
+
+        // Load all votes from Supabase
+        async function loadVotes() {
+            if (!supabase) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('votes')
+                    .select('*');
+
+                if (error) throw error;
+
+                // Reset vote data
+                votesData = {};
+                userVotes = {};
+                const currentSession = getSessionId();
+
+                data.forEach(vote => {
+                    const discId = vote.discussion_id;
+                    if (!votesData[discId]) {
+                        votesData[discId] = { likes: 0, dislikes: 0 };
+                    }
+
+                    if (vote.vote_type === 'like') {
+                        votesData[discId].likes++;
+                        if (vote.session_id === currentSession) {
+                            userVotes[discId] = 'like';
+                        }
+                    } else if (vote.vote_type === 'dislike') {
+                        votesData[discId].dislikes++;
+                        if (vote.session_id === currentSession) {
+                            userVotes[discId] = 'dislike';
+                        }
+                    }
+                });
+
+                debugLog(`Loaded ${data.length} votes`);
+            } catch (error) {
+                console.error('Error loading votes:', error);
+                debugLog('ERROR loading votes: ' + error.message);
+            }
+        }
+
+        // Subscribe to realtime changes
+        let discussionsChannel = null;
+        let votesChannel = null;
+
+        function subscribeToRealtime() {
+            if (!supabase) return;
+
+            // Unsubscribe from any existing channels first
+            unsubscribeFromRealtime();
+
+            // Subscribe to discussions INSERT events
+            discussionsChannel = supabase
+                .channel('discussions-channel')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'discussions'
+                    },
+                    async (payload) => {
+                        console.log('New discussion received:', payload);
+                        debugLog('✓ Discussion INSERT event', true);
+                        discussionsData = await loadDiscussions();
+                        renderComments();
+                    }
+                )
+                .subscribe((status) => {
+                    console.log('Discussions channel status:', status);
+                    debugLog(`Discussions channel: ${status}`);
+                });
+
+            // Subscribe to votes INSERT and DELETE events
+            votesChannel = supabase
+                .channel('votes-channel')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'votes'
+                    },
+                    async (payload) => {
+                        console.log('New vote received:', payload);
+                        debugLog('✓ Vote INSERT event', true);
+                        await loadVotes();
+                        renderComments();
+                    }
+                )
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'DELETE',
+                        schema: 'public',
+                        table: 'votes'
+                    },
+                    async (payload) => {
+                        console.log('Vote removed:', payload);
+                        debugLog('✓ Vote DELETE event', true);
+                        await loadVotes();
+                        renderComments();
+                    }
+                )
+                .subscribe((status) => {
+                    console.log('Votes channel status:', status);
+                    debugLog(`Votes channel: ${status}`);
+                });
+
+            console.log('Subscribed to realtime channels');
+            debugLog('✓ Realtime channels subscribed', true);
+        }
+
+        // Unsubscribe from realtime
+        function unsubscribeFromRealtime() {
+            if (discussionsChannel) {
+                supabase.removeChannel(discussionsChannel);
+                discussionsChannel = null;
+            }
+            if (votesChannel) {
+                supabase.removeChannel(votesChannel);
+                votesChannel = null;
+            }
+            debugLog('Unsubscribed from channels');
+        }
+
+        // Show error message
+        function showError(message) {
+            setupStatus.textContent = `❌ ${message}`;
+            setupStatus.className = 'status-message error show';
+        }
+
+        // Show success in setup
+        function showSetupSuccess(message) {
+            setupStatus.textContent = `✅ ${message}`;
+            setupStatus.className = 'status-message success show';
+        }
+
+        // Update connection status panel and icon
+        function updateConnectionStatus(connected, msg) {
+            if (connected) {
+                statusIndicator.classList.add('connected');
+                connectionIcon.style.background = getComputedStyle(connectionIcon).getPropertyValue('--color-success') || 'limegreen';
+                connectionStatusText.textContent = '✅ Connected to Supabase';
+            } else {
+                statusIndicator.classList.remove('connected');
+                connectionIcon.style.background = getComputedStyle(connectionIcon).getPropertyValue('--color-error') || 'crimson';
+                connectionStatusText.textContent = msg ? '❌ ' + msg : '❌ Not Connected';
+            }
+        }
+        // Update debug panel
+        function debugLog(str, alwaysShow) {
+            errorLog.push(`[${(new Date).toLocaleTimeString()}] ${str}`);
+            if (alwaysShow || debugPanel.style.display !== 'none') debugPanel.textContent = errorLog.slice(-30).join('\n');
+        }
+        // Update last sync time on panel
+        function setLastSyncNow() {
+            lastSync = Date.now();
+            lastSyncTime.textContent = `Last sync: ${(new Date(lastSync)).toLocaleTimeString()}`;
+        }
+
+        // Collapse/expand debug panel
+        collapseDebugBtn.addEventListener('click', () => {
+            debugPanel.style.display = debugPanel.style.display == 'none' ? 'block' : 'none';
+            collapseDebugBtn.textContent = debugPanel.style.display == 'none' ? '🪛 Debug' : '⬆️ Hide Debug';
+            if (debugPanel.style.display == 'block') debugPanel.textContent = errorLog.slice(-40).join('\n');
+        });
+
+        // Save credentials to memory (not localStorage due to sandbox restrictions)
+        function saveCredentials(url, key) {
+            window.supabaseCredentials = { url, key };
+        }
+
+        // Load credentials from memory
+        function loadCredentials() {
+            return window.supabaseCredentials || null;
+        }
+
+        // Format relative time
+        function getRelativeTime(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            if (seconds < 60) {
+                return 'just now';
+            } else if (minutes < 60) {
+                return minutes === 1 ? '1 min ago' : `${minutes} mins ago`;
+            } else if (hours < 24) {
+                return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+            } else {
+                return days === 1 ? '1 day ago' : `${days} days ago`;
+            }
+        }
+
+        // Build reply tree recursively
+        function buildReplyTree(parentId, level = 0) {
+            const replies = discussionsData.filter(d => d.parent_id === parentId && d.parent_id !== null);
+            return replies.map(reply => ({
+                ...reply,
+                level: level,
+                children: buildReplyTree(reply.id, level + 1)
+            }));
+        }
+
+        // Render comments to the page
+        function renderComments() {
+            setLastSyncNow();
+
+            // Get top-level comments (parent_id is null)
+            const comments = discussionsData.filter(d => d.parent_id === null || d.parent_id === undefined);
+
+            // Update comment count
+            commentCount.textContent = comments.length;
+
+            // Clear current list
+            commentsList.innerHTML = '';
+
+            // Show empty state if no comments
+            if (comments.length === 0) {
+                commentsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💭</div>
+                        <p>No discussions yet. Be the first to comment!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort comments by timestamp (newest first) and limit to MAX_COMMENTS
+            const sortedComments = comments
+                .sort((a, b) => b.timestamp - a.timestamp)
+                .slice(0, MAX_COMMENTS);
+
+            // Render each comment
+            sortedComments.forEach(comment => {
+                const commentCard = document.createElement('div');
+                commentCard.className = 'comment-card';
+                commentCard.dataset.commentId = comment.id;
+
+                const votes = votesData[comment.id] || { likes: 0, dislikes: 0 };
+                const likeCount = votes.likes;
+                const dislikeCount = votes.dislikes;
+                const isLiked = userVotes[comment.id] === 'like';
+                const isDisliked = userVotes[comment.id] === 'dislike';
+
+                // Build reply tree
+                const replyTree = buildReplyTree(comment.id);
+                const replyCount = countTotalReplies(replyTree);
+
+                const authorName = comment.author_name || 'Anonymous';
+                const initials = getInitials(authorName);
+                const isCollapsed = collapsedThreads.has(comment.id);
+
+                commentCard.innerHTML = `
+                    <div class="comment-header">
+                        <div class="comment-avatar">${initials}</div>
+                        <div class="comment-info">
+                            <div class="comment-author">${escapeHtml(authorName)}</div>
+                            <div class="comment-timestamp">${getRelativeTime(comment.timestamp)}</div>
+                        </div>
+                    </div>
+                    <p class="comment-text">${escapeHtml(comment.text)}</p>
+                    <div class="comment-actions">
+                        <button class="action-btn like-btn ${isLiked ? 'liked' : ''}" data-item-id="${comment.id}" data-item-type="comment">
+                            👍 <span class="action-count">${likeCount}</span>
+                        </button>
+                        <button class="action-btn dislike-btn ${isDisliked ? 'disliked' : ''}" data-item-id="${comment.id}" data-item-type="comment">
+                            👎 <span class="action-count">${dislikeCount}</span>
+                        </button>
+                        <button class="action-btn reply-btn" data-parent-id="${comment.id}" data-parent-type="comment">
+                            💬 Reply
+                        </button>
+                    </div>
+                    <div class="reply-form-container" data-parent-id="${comment.id}" data-parent-type="comment"></div>
+                    ${replyCount > 0 ? `
+                        <div class="replies-toggle" data-parent-id="${comment.id}">
+                            <span class="toggle-icon">${isCollapsed ? '▶' : '▼'}</span>
+                            <span>${replyCount} ${replyCount === 1 ? 'reply' : 'replies'}</span>
+                        </div>
+                    ` : ''}
+                    <div class="replies-container ${isCollapsed ? 'collapsed' : ''}" data-parent-id="${comment.id}">
+                        ${renderNestedReplies(replyTree, 1)}
+                    </div>
+                `;
+                commentsList.appendChild(commentCard);
+            });
+
+            // Attach event listeners
+            attachCommentEventListeners();
+        }
+
+        // Count total replies recursively
+        function countTotalReplies(tree) {
+            if (!tree || tree.length === 0) return 0;
+            let count = tree.length;
+            tree.forEach(item => {
+                if (item.children && item.children.length > 0) {
+                    count += countTotalReplies(item.children);
+                }
+            });
+            return count;
+        }
+
+        // Render nested replies recursively
+        function renderNestedReplies(replyTree, level = 1) {
+            if (!replyTree || replyTree.length === 0) return '';
+
+            const maxIndent = 60;
+            const indent = Math.min(level * 20, maxIndent);
+            const fontSize = level === 1 ? '95%' : '90%';
+            const borderColor = level === 1 ? 'var(--color-primary)' : 'var(--color-border)';
+
+            let html = '';
+            replyTree.forEach(item => {
+                const votes = votesData[item.id] || { likes: 0, dislikes: 0 };
+                const likeCount = votes.likes;
+                const dislikeCount = votes.dislikes;
+                const isLiked = userVotes[item.id] === 'like';
+                const isDisliked = userVotes[item.id] === 'dislike';
+                const authorName = item.author_name || 'Anonymous';
+                const childCount = item.children ? item.children.length : 0;
+                const isCollapsed = collapsedThreads.has(item.id);
+                const itemType = 'reply';
+
+                const timestamp = item.created_at ? new Date(item.created_at).getTime() : Date.now();
+                html += `
+                    <div class="reply-card" style="margin-left: ${indent}px; border-left: 2px solid ${borderColor}; padding-left: 12px; font-size: ${fontSize};" data-reply-id="${item.id}" data-reply-type="${itemType}">
+                        <div class="reply-header" style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                            <strong style="color: var(--color-text); font-size: 13px;">${escapeHtml(authorName)}</strong>
+                            <span style="color: var(--color-text-secondary); font-size: 11px;">${getRelativeTime(timestamp)}</span>
+                        </div>
+                        <p class="reply-text">${escapeHtml(item.text)}</p>
+                        <div class="comment-actions" style="margin-top: 8px;">
+                            <button class="action-btn like-btn ${isLiked ? 'liked' : ''}" data-item-id="${item.id}" data-item-type="${itemType}" style="font-size: 12px; padding: 4px 8px;">
+                                👍 <span class="action-count">${likeCount}</span>
+                            </button>
+                            <button class="action-btn dislike-btn ${isDisliked ? 'disliked' : ''}" data-item-id="${item.id}" data-item-type="${itemType}" style="font-size: 12px; padding: 4px 8px;">
+                                👎 <span class="action-count">${dislikeCount}</span>
+                            </button>
+                            ${level < 3 ? `<button class="action-btn reply-btn" data-parent-id="${item.id}" data-parent-type="${itemType}" style="font-size: 12px; padding: 4px 8px;">
+                                💬 Reply
+                            </button>` : ''}
+                        </div>
+                        <div class="reply-form-container" data-parent-id="${item.id}" data-parent-type="${itemType}"></div>
+                        ${childCount > 0 ? `
+                            <div class="replies-toggle" data-parent-id="${item.id}" style="font-size: 12px; margin-top: 8px;">
+                                <span class="toggle-icon">${isCollapsed ? '▶' : '▼'}</span>
+                                <span>${childCount} ${childCount === 1 ? 'reply' : 'replies'}</span>
+                            </div>
+                        ` : ''}
+                        <div class="replies-container ${isCollapsed ? 'collapsed' : ''}" data-parent-id="${item.id}">
+                            ${item.children && item.children.length > 0 ? renderNestedReplies(item.children, level + 1) : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            return html;
+        }
+
+        // Get initials from name
+        function getInitials(name) {
+            if (!name || name === 'Anonymous') return '?';
+            const parts = name.trim().split(' ');
+            if (parts.length >= 2) {
+                return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            }
+            return name.substring(0, 2).toUpperCase();
+        }
+
+        // Attach event listeners to comment actions
+        function attachCommentEventListeners() {
+            // Like buttons
+            document.querySelectorAll('.like-btn').forEach(btn => {
+                btn.addEventListener('click', handleLikeClick);
+            });
+
+            // Dislike buttons
+            document.querySelectorAll('.dislike-btn').forEach(btn => {
+                btn.addEventListener('click', handleDislikeClick);
+            });
+
+
+
+            // Reply buttons
+            document.querySelectorAll('.reply-btn').forEach(btn => {
+                btn.addEventListener('click', handleReplyClick);
+            });
+
+            // Replies toggle
+            document.querySelectorAll('.replies-toggle').forEach(toggle => {
+                toggle.addEventListener('click', handleRepliesToggle);
+            });
+
+
+        }
+
+        // Handle like button click
+        async function handleLikeClick(e) {
+            if (!supabase) {
+                alert('Please connect to Supabase first.');
+                return;
+            }
+
+            const btn = e.currentTarget;
+            const itemId = btn.dataset.itemId;
+            const currentVote = userVotes[itemId];
+            const sessionId = getSessionId();
+
+            try {
+                if (currentVote === 'like') {
+                    // Unlike - remove vote
+                    const { error } = await supabase
+                        .from('votes')
+                        .delete()
+                        .eq('discussion_id', itemId)
+                        .eq('session_id', sessionId)
+                        .eq('vote_type', 'like');
+
+                    if (error) throw error;
+                    debugLog('Like removed ✓', true);
+                } else {
+                    // Remove dislike if exists
+                    if (currentVote === 'dislike') {
+                        await supabase
+                            .from('votes')
+                            .delete()
+                            .eq('discussion_id', itemId)
+                            .eq('session_id', sessionId)
+                            .eq('vote_type', 'dislike');
+                    }
+
+                    // Add like
+                    const { error } = await supabase
+                        .from('votes')
+                        .insert([{
+                            discussion_id: itemId,
+                            session_id: sessionId,
+                            vote_type: 'like'
+                        }]);
+
+                    if (error) throw error;
+                    debugLog('Like added ✓', true);
+                }
+
+                // Reload votes and update UI
+                await loadVotes();
+                renderComments();
+            } catch (error) {
+                console.error('Error toggling like:', error);
+                debugLog('ERROR toggling like: ' + error.message);
+            }
+        }
+
+        // Handle dislike button click
+        async function handleDislikeClick(e) {
+            if (!supabase) {
+                alert('Please connect to Supabase first.');
+                return;
+            }
+
+            const btn = e.currentTarget;
+            const itemId = btn.dataset.itemId;
+            const currentVote = userVotes[itemId];
+            const sessionId = getSessionId();
+
+            try {
+                if (currentVote === 'dislike') {
+                    // Remove dislike
+                    const { error } = await supabase
+                        .from('votes')
+                        .delete()
+                        .eq('discussion_id', itemId)
+                        .eq('session_id', sessionId)
+                        .eq('vote_type', 'dislike');
+
+                    if (error) throw error;
+                    debugLog('Dislike removed ✓', true);
+                } else {
+                    // Remove like if exists
+                    if (currentVote === 'like') {
+                        await supabase
+                            .from('votes')
+                            .delete()
+                            .eq('discussion_id', itemId)
+                            .eq('session_id', sessionId)
+                            .eq('vote_type', 'like');
+                    }
+
+                    // Add dislike
+                    const { error } = await supabase
+                        .from('votes')
+                        .insert([{
+                            discussion_id: itemId,
+                            session_id: sessionId,
+                            vote_type: 'dislike'
+                        }]);
+
+                    if (error) throw error;
+                    debugLog('Dislike added ✓', true);
+                }
+
+                // Reload votes and update UI
+                await loadVotes();
+                renderComments();
+            } catch (error) {
+                console.error('Error toggling dislike:', error);
+                debugLog('ERROR toggling dislike: ' + error.message);
+            }
+        }
+
+
+
+        // Handle reply button click
+        function handleReplyClick(e) {
+            const btn = e.currentTarget;
+            const parentId = btn.dataset.parentId;
+            const parentType = btn.dataset.parentType;
+            const formContainer = document.querySelector(`.reply-form-container[data-parent-id="${parentId}"][data-parent-type="${parentType}"]`);
+
+            // Check if form already exists
+            if (formContainer.innerHTML) {
+                formContainer.innerHTML = '';
+                return;
+            }
+
+            // Get parent author name for context
+            let parentAuthor = 'this comment';
+            const parent = discussionsData.find(d => d.id === parentId);
+            if (parent) {
+                parentAuthor = parent.author_name || 'Anonymous';
+            }
+
+            // Create reply form
+            formContainer.innerHTML = `
+                <div class="reply-form">
+                    <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 8px;">Replying to <strong>${escapeHtml(parentAuthor)}</strong></div>
+                    <input type="text" placeholder="Your name*" class="form-input" style="margin-bottom: 8px; font-size: 13px; padding: 6px 10px;" required />
+                    <input type="email" placeholder="Your email (optional)" class="form-input" style="margin-bottom: 8px; font-size: 13px; padding: 6px 10px;" />
+                    <textarea placeholder="Write your reply..." maxlength="500" required style="min-height: 80px;"></textarea>
+                    <div class="reply-form-actions">
+                        <button class="btn btn-primary btn-sm post-reply-btn" data-parent-id="${parentId}" data-parent-type="${parentType}">Post Reply</button>
+                        <button class="btn btn-secondary btn-sm cancel-reply-btn">Cancel</button>
+                    </div>
+                </div>
+            `;
+
+            // Attach event listeners
+            const postBtn = formContainer.querySelector('.post-reply-btn');
+            const cancelBtn = formContainer.querySelector('.cancel-reply-btn');
+            const nameInput = formContainer.querySelector('input[type="text"]');
+            const emailInput = formContainer.querySelector('input[type="email"]');
+            const textarea = formContainer.querySelector('textarea');
+
+            postBtn.addEventListener('click', () => handlePostReply(parentId, parentType, textarea, nameInput, emailInput));
+            cancelBtn.addEventListener('click', () => formContainer.innerHTML = '');
+
+            // Focus on name input
+            nameInput.focus();
+        }
+
+        // Handle posting a reply
+        async function handlePostReply(parentId, parentType, textarea, nameInput, emailInput) {
+            if (!supabase) {
+                alert('Please connect to Supabase first.');
+                return;
+            }
+            const text = textarea.value.trim();
+            const name = nameInput.value.trim();
+            const email = emailInput.value.trim();
+
+            if (!text) {
+                textarea.focus();
+                alert('Please enter a reply.');
+                return;
+            }
+            if (!name) {
+                nameInput.focus();
+                alert('Please enter your name.');
+                return;
+            }
+
+            const btn = textarea.parentElement.querySelector('.post-reply-btn');
+            btn.disabled = true;
+            btn.textContent = 'Posting...';
+
+            try {
+                // Insert reply or nested reply (new schema, item_type 'reply', parent_type controlled)
+                const insertData = {
+                    poll_id: POLL_ID,
+                    parent_id: parentId,
+                    parent_type: parentType,
+                    author_name: name,
+                    author_email: email || null,
+                    text: text,
+                    item_type: 'reply'
+                };
+
+                const { error } = await supabase
+                    .from('discussions')
+                    .insert([insertData]);
+
+                if (error) throw error;
+
+                debugLog('Reply posted ✓', true);
+
+                // Clear form
+                const formContainer = document.querySelector(`.reply-form-container[data-parent-id="${parentId}"][data-parent-type="${parentType}"]`);
+                formContainer.innerHTML = '';
+
+                // Reload discussions
+                await loadDiscussions();
+                renderComments();
+            } catch (error) {
+                console.error('Error posting reply:', error);
+                debugLog('ERROR posting reply: ' + (error.message || error), true);
+                alert('Failed to post reply. Please try again.');
+                btn.disabled = false;
+                btn.textContent = 'Post Reply';
+                textarea.focus();
+            }
+        }
+
+        // Handle replies toggle
+        function handleRepliesToggle(e) {
+            const toggle = e.currentTarget;
+            const parentId = toggle.dataset.parentId;
+            const repliesContainer = document.querySelector(`.replies-container[data-parent-id="${parentId}"]`);
+            const icon = toggle.querySelector('.toggle-icon');
+
+            repliesContainer.classList.toggle('collapsed');
+            const isCollapsed = repliesContainer.classList.contains('collapsed');
+            icon.textContent = isCollapsed ? '▶' : '▼';
+
+            // Track collapsed state
+            if (isCollapsed) {
+                collapsedThreads.add(parentId);
+            } else {
+                collapsedThreads.delete(parentId);
+            }
+        }
+
+
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Show success message
+        function showSuccessMessage() {
+            successMessage.classList.add('show');
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 3000);
+        }
+
+        // Manual refresh
+        refreshBtn.addEventListener('click', async () => {
+            refreshBtn.textContent = 'Refreshing...';
+            refreshBtn.disabled = true;
+            try {
+                commentsList.innerHTML = '<div class="loading-state">Refreshing...</div>';
+                discussionsData = await loadDiscussions();
+                await loadVotes();
+                renderComments();
+                debugLog('Manual refresh finished ✓', true);
+            } catch (error) {
+                console.error('Refresh error:', error);
+                debugLog('Refresh error: ' + (error.message || error), true);
+            } finally {
+                refreshBtn.disabled = false;
+                refreshBtn.textContent = '🔄 Refresh Comments';
+            }
+        });
+
+        // Character counter update
+        commentText.addEventListener('input', () => {
+            const length = commentText.value.length;
+            const maxLength = 700;
+            charCounter.textContent = `${length}/${maxLength}`;
+
+            if (length > maxLength * 0.9) {
+                charCounter.classList.add('warning');
+            } else {
+                charCounter.classList.remove('warning');
+            }
+
+            if (length >= maxLength) {
+                charCounter.classList.add('error');
+            } else {
+                charCounter.classList.remove('error');
+            }
+        });
+
+        // Handle form submission
+        commentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Check if Supabase is connected
+            if (!supabase) {
+                alert('Please connect to Supabase first. Click the ⚙️ Setup button.');
+                return;
+            }
+
+            // Get form values and trim whitespace
+            const text = commentText.value.trim();
+            const name = authorName.value.trim();
+            const email = authorEmail.value.trim();
+
+            // Validate
+            if (!text) {
+                commentText.focus();
+                alert('Please enter a comment.');
+                return;
+            }
+
+            if (!name) {
+                authorName.focus();
+                alert('Please enter your name.');
+                return;
+            }
+
+            // Disable submit button and show loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Posting...';
+
+            try {
+                // Insert comment into Supabase (new schema, item_type COMMENT)
+                const { error } = await supabase
+                    .from('discussions')
+                    .insert([
+                        {
+                            poll_id: POLL_ID,
+                            parent_id: null,
+                            parent_type: null,
+                            text: text,
+                            author_name: name,
+                            author_email: email || null,
+                            item_type: 'comment'
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                // Clear form
+                commentText.value = '';
+                authorName.value = '';
+                authorEmail.value = '';
+                charCounter.textContent = '0/700';
+                charCounter.classList.remove('warning', 'error');
+
+                showSuccessMessage();
+                debugLog('Comment posted ✓', true);
+
+                // Reload discussions
+                await loadDiscussions();
+                renderComments();
+            } catch (error) {
+                console.error('Error posting comment:', error);
+                debugLog('Error posting comment: ' + (error.message || error), true);
+                alert('Failed to post comment. Please try again.');
+                commentText.focus();
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Post Comment';
+            }
+        });
+
+        // Setup modal handlers
+        setupBtn.addEventListener('click', () => {
+            setupModal.classList.add('active');
+        });
+
+        closeModal.addEventListener('click', () => {
+            setupModal.classList.remove('active');
+        });
+
+        setupModal.addEventListener('click', (e) => {
+            if (e.target === setupModal) {
+                setupModal.classList.remove('active');
+            }
+        });
+
+        // Handle setup form submission
+        setupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const url = supabaseUrlInput.value.trim();
+            const key = supabaseKeyInput.value.trim();
+
+            if (!url || !key) {
+                showError('Please provide both URL and key');
+                return;
+            }
+
+            // Disable button and show loading
+            connectBtn.disabled = true;
+            connectBtn.textContent = 'Connecting...';
+            setupStatus.textContent = '';
+            setupStatus.className = 'status-message';
+
+            try {
+                // Initialize Supabase
+                if (!initSupabase(url, key)) {
+                    throw new Error('Failed to initialize Supabase client');
+                }
+
+                // Test connection
+                await testConnection();
+
+                // Save credentials
+                saveCredentials(url, key);
+
+                // Update UI
+                updateConnectionStatus(true);
+                showSetupSuccess('Connected successfully!');
+
+                // Unsubscribe from old channels if exist
+                unsubscribeFromRealtime();
+
+                // Load data
+                commentsList.innerHTML = '<div class="loading-state">Loading discussions...</div>';
+                discussionsData = await loadDiscussions();
+                await loadVotes();
+
+                renderComments();
+
+                // Subscribe to realtime updates
+                subscribeToRealtime();
+
+                // Close modal after short delay
+                setTimeout(() => {
+                    setupModal.classList.remove('active');
+                }, 1500);
+
+            } catch (error) {
+                console.error('Setup error:', error);
+                showError(error.message || 'Connection failed. Please check your credentials.');
+                updateConnectionStatus(false);
+            } finally {
+                connectBtn.disabled = false;
+                connectBtn.textContent = 'Connect';
+            }
+        });
+
+        // Auto-refresh comments every 30 seconds to update relative times
+        setInterval(() => {
+            renderComments();
+        }, 30000);
+
+        // Try to auto-connect on page load if credentials exist
+        async function autoConnect() {
+            const credentials = loadCredentials();
+            if (credentials) {
+                supabaseUrlInput.value = credentials.url;
+                supabaseKeyInput.value = credentials.key;
+                if (initSupabase(credentials.url, credentials.key)) {
+                    try {
+                        await testConnection();
+                        updateConnectionStatus(true);
+                        debugLog('Auto-connected on load', true);
+                        discussionsData = await loadDiscussions();
+                        await loadVotes();
+                        renderComments();
+                        subscribeToRealtime();
+                    } catch (error) {
+                        console.error('Auto-connect error:', error);
+                        debugLog('Auto-connect failed: ' + (error.message || error), true);
+                        updateConnectionStatus(false, error.message || 'Not Connected');
+                        renderComments();
+                    }
+                } else {
+                    renderComments();
+                }
+            } else {
+                renderComments();
+            }
+        }
+
+        // Handle setup feed button clicks
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('setup-feed-btn')) {
+                const feedType = e.target.dataset.feedType;
+                const url = feedType === 'instagram'
+                    ? 'https://elfsight.com/instagram-feed-instashow/'
+                    : 'https://elfsight.com/x-feed/';
+                window.open(url, '_blank');
+            }
+        });
+
+        // Initialize app
+        autoConnect();
+
+    </script>
+</body>
+
+</html>
