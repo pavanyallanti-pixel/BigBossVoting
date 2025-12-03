@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --color-primary-50: #f0f9fa;
+        --color-primary-100: #d6f0f3;
+        --color-primary-200: #afe0e6;
+        --color-primary-300: #7cc8d3;
+        --color-primary-400: #46a9b9;
+        --color-primary-500: #21808d;
+        --color-primary-600: #1d7480;
+        --color-primary-700: #1a6873;
+        --color-primary-800: #195660;
+        --color-primary-900: #174851;
+    }
+
+    body {
+        @apply bg-gray-50 text-gray-900 font-sans antialiased;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-display font-bold text-gray-900;
+    }
+}
+
+@layer components {
+    .btn {
+        @apply inline-flex items-center justify-center px-6 py-3 rounded-full font-medium transition-all duration-200 text-sm;
+    }
+
+    .btn-primary {
+        @apply bg-primary-500 text-white shadow-md hover:bg-primary-600 hover:shadow-lg hover:-translate-y-0.5;
+    }
+
+    .btn-secondary {
+        @apply bg-white text-primary-600 border border-gray-200 hover:bg-primary-50 hover:border-primary-200;
+    }
+
+    .card {
+        @apply bg-white rounded-2xl p-6 shadow-md border border-gray-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+    }
+
+    .glass-panel {
+        @apply bg-white/70 backdrop-blur-md border border-white/50 shadow-sm;
+    }
+}
