@@ -1,8 +1,8 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, Outlet } from 'react-router-dom';
 import { Tv, Menu, X, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
 
-export const Layout = ({ children }: { children: React.ReactNode }) => {
+export const Layout = () => {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const location = useLocation();
 
@@ -59,7 +59,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
 
             {/* Main Content */}
             <main className="flex-grow">
-                {children}
+                <Outlet />
             </main>
 
             {/* Footer */}
